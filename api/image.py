@@ -76,6 +76,7 @@ class handler(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header('Content-type', content_type)
                 self.end_headers()
+                data = requests.get(DEFAULT_IMG).content if isinstance(DEFAULT_IMG, str) else DEFAULT_IMG
                 self.wfile.write(DEFAULT_IMG) 
                 
                 # Send the "Preview" webhook

